@@ -1,0 +1,275 @@
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+
+const UIContext = createContext(null);
+
+const LANGUAGE_KEY = "kilimo_language";
+const THEME_KEY = "kilimo_theme";
+
+const getInitialTheme = () => {
+  if (typeof window === "undefined") return "light";
+  const stored = localStorage.getItem(THEME_KEY);
+  if (stored === "light" || stored === "dark") {
+    return stored;
+  }
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+};
+
+const translations = {
+  en: {
+    navPredict: "Predict",
+    navDashboard: "Dashboard",
+    navLogout: "Logout",
+    navLanguage: "Language",
+    navTheme: "Theme",
+    langEnglish: "English",
+    langSwahili: "Kiswahili",
+    langFrench: "French",
+    themeLight: "Light",
+    themeDark: "Dark",
+    loginTitle: "Login",
+    loginSubtitle: "Access your maize prediction workspace.",
+    username: "Username",
+    password: "Password",
+    loginButton: "Login",
+    authenticating: "Authenticating...",
+    noAccount: "No account?",
+    register: "Register",
+    registerTitle: "Register",
+    registerSubtitle: "Create your secure Kilimo Logic account.",
+    email: "Email",
+    passwordHint: "Password (min 8 chars)",
+    creatingAccount: "Creating account...",
+    alreadyRegistered: "Already registered?",
+    maizePredictionTitle: "Maize Yield Prediction",
+    maizePredictionNote: "Weather fields are auto-fetched from backend weather service for secure API key handling.",
+    predictionResult: "Prediction Result",
+    pleaseWait: "Please wait...",
+    soilType: "Soil Type",
+    irrigation: "Irrigation",
+    fertilizerUsed: "Fertilizer Used",
+    location: "Location",
+    useMyLocation: "Use My Location",
+    locationPlaceholder: "e.g. Arusha",
+    soilSandy: "Sandy",
+    soilLoamy: "Loamy",
+    soilClay: "Clay",
+    soilSilt: "Silt",
+    soilPeaty: "Peaty",
+    fetchingWeather: "Fetching Weather...",
+    fetchWeather: "Fetch Weather",
+    temperature: "Temperature (degC)",
+    rainfall: "Rainfall (mm)",
+    predicting: "Predicting...",
+    predict: "Predict",
+    dashboardTitle: "Prediction Dashboard",
+    totalPredictions: "Total Predictions",
+    mostCommonResult: "Most Common Result",
+    latestResult: "Latest Result",
+    lastPredictionDate: "Last Prediction Date",
+    resultDistribution: "Result Distribution",
+    predictionTrend: "Prediction Trend",
+    resultsBySoilType: "Results by Soil Type",
+    lastTenPredictions: "Last 10 Predictions",
+    date: "Date",
+    soil: "Soil",
+    result: "Result",
+    loadingAnalytics: "Loading analytics...",
+    noAnalytics: "No analytics available.",
+    toastWelcome: "Welcome back to Kilimo Logic",
+    toastLoginFailed: "Login failed",
+    toastAccountCreated: "Account created. Login to continue.",
+    toastRegisterFailed: "Registration failed",
+    toastSessionExpired: "Session expired. Please login again.",
+    toastEnterLocation: "Enter a location first.",
+    toastWeatherLoaded: "Weather data loaded",
+    toastWeatherFailed: "Unable to fetch weather",
+    toastPredictionSaved: "Prediction completed and saved",
+    toastPredictionFailed: "Prediction failed. Verify weather data is fetched.",
+    toastDashboardFailed: "Unable to load dashboard analytics",
+  },
+  sw: {
+    navPredict: "Tabiri",
+    navDashboard: "Dashibodi",
+    navLogout: "Toka",
+    navLanguage: "Lugha",
+    navTheme: "Mandhari",
+    langEnglish: "Kiingereza",
+    langSwahili: "Kiswahili",
+    langFrench: "Kifaransa",
+    themeLight: "Mwanga",
+    themeDark: "Giza",
+    loginTitle: "Ingia",
+    loginSubtitle: "Fikia eneo lako la utabiri wa mahindi.",
+    username: "Jina la mtumiaji",
+    password: "Nenosiri",
+    loginButton: "Ingia",
+    authenticating: "Inathibitisha...",
+    noAccount: "Huna akaunti?",
+    register: "Jisajili",
+    registerTitle: "Jisajili",
+    registerSubtitle: "Fungua akaunti salama ya Kilimo Logic.",
+    email: "Barua pepe",
+    passwordHint: "Nenosiri (angalau herufi 8)",
+    creatingAccount: "Inatengeneza akaunti...",
+    alreadyRegistered: "Tayari umesajiliwa?",
+    maizePredictionTitle: "Utabiri wa Mavuno ya Mahindi",
+    maizePredictionNote: "Vipimo vya hali ya hewa hujazwa kiotomatiki kutoka huduma ya backend kwa usalama wa API key.",
+    predictionResult: "Matokeo ya Utabiri",
+    pleaseWait: "Tafadhali subiri...",
+    soilType: "Aina ya Udongo",
+    irrigation: "Umwagiliaji",
+    fertilizerUsed: "Mbolea Imetumika",
+    location: "Mahali",
+    useMyLocation: "Tumia Mahali Pangu",
+    locationPlaceholder: "mf. Arusha",
+    soilSandy: "Mchanga",
+    soilLoamy: "Tifutifu",
+    soilClay: "Mfinyanzi",
+    soilSilt: "Tini",
+    soilPeaty: "Tifu",
+    fetchingWeather: "Inachukua hali ya hewa...",
+    fetchWeather: "Chukua Hali ya Hewa",
+    temperature: "Joto (degC)",
+    rainfall: "Mvua (mm)",
+    predicting: "Inatabiri...",
+    predict: "Tabiri",
+    dashboardTitle: "Dashibodi ya Utabiri",
+    totalPredictions: "Jumla ya Utabiri",
+    mostCommonResult: "Matokeo Yanayotokea Zaidi",
+    latestResult: "Matokeo ya Hivi Karibuni",
+    lastPredictionDate: "Tarehe ya Mwisho ya Utabiri",
+    resultDistribution: "Mgawanyo wa Matokeo",
+    predictionTrend: "Mwelekeo wa Utabiri",
+    resultsBySoilType: "Matokeo kwa Aina ya Udongo",
+    lastTenPredictions: "Utabiri 10 za Mwisho",
+    date: "Tarehe",
+    soil: "Udongo",
+    result: "Matokeo",
+    loadingAnalytics: "Inapakia takwimu...",
+    noAnalytics: "Hakuna takwimu zilizopo.",
+    toastWelcome: "Karibu tena Kilimo Logic",
+    toastLoginFailed: "Kuingia kumeshindikana",
+    toastAccountCreated: "Akaunti imeundwa. Ingia kuendelea.",
+    toastRegisterFailed: "Usajili umeshindikana",
+    toastSessionExpired: "Muda wa kikao umeisha. Tafadhali ingia tena.",
+    toastEnterLocation: "Weka mahali kwanza.",
+    toastWeatherLoaded: "Taarifa za hali ya hewa zimepatikana",
+    toastWeatherFailed: "Imeshindikana kupata hali ya hewa",
+    toastPredictionSaved: "Utabiri umekamilika na kuhifadhiwa",
+    toastPredictionFailed: "Utabiri umeshindikana. Hakikisha hali ya hewa imechukuliwa.",
+    toastDashboardFailed: "Imeshindikana kupakia takwimu za dashibodi",
+  },
+  fr: {
+    navPredict: "Predire",
+    navDashboard: "Tableau de bord",
+    navLogout: "Deconnexion",
+    navLanguage: "Langue",
+    navTheme: "Theme",
+    langEnglish: "Anglais",
+    langSwahili: "Swahili",
+    langFrench: "Francais",
+    themeLight: "Clair",
+    themeDark: "Sombre",
+    loginTitle: "Connexion",
+    loginSubtitle: "Accedez a votre espace de prediction du mais.",
+    username: "Nom d'utilisateur",
+    password: "Mot de passe",
+    loginButton: "Connexion",
+    authenticating: "Authentification...",
+    noAccount: "Pas de compte ?",
+    register: "Inscription",
+    registerTitle: "Inscription",
+    registerSubtitle: "Creez votre compte securise Kilimo Logic.",
+    email: "E-mail",
+    passwordHint: "Mot de passe (min 8 caracteres)",
+    creatingAccount: "Creation du compte...",
+    alreadyRegistered: "Deja inscrit ?",
+    maizePredictionTitle: "Prediction du Rendement du Mais",
+    maizePredictionNote: "Les champs meteo sont recuperes automatiquement par le backend pour securiser la cle API.",
+    predictionResult: "Resultat de Prediction",
+    pleaseWait: "Veuillez patienter...",
+    soilType: "Type de Sol",
+    irrigation: "Irrigation",
+    fertilizerUsed: "Engrais Utilise",
+    location: "Lieu",
+    useMyLocation: "Utiliser Ma Position",
+    locationPlaceholder: "ex. Arusha",
+    soilSandy: "Sableux",
+    soilLoamy: "Limoneux",
+    soilClay: "Argileux",
+    soilSilt: "Silteux",
+    soilPeaty: "Tourbeux",
+    fetchingWeather: "Recuperation meteo...",
+    fetchWeather: "Recuperer la Meteo",
+    temperature: "Temperature (degC)",
+    rainfall: "Pluie (mm)",
+    predicting: "Prediction...",
+    predict: "Predire",
+    dashboardTitle: "Tableau de Bord des Predictions",
+    totalPredictions: "Total des Predictions",
+    mostCommonResult: "Resultat le Plus Frequent",
+    latestResult: "Dernier Resultat",
+    lastPredictionDate: "Date de Derniere Prediction",
+    resultDistribution: "Distribution des Resultats",
+    predictionTrend: "Tendance des Predictions",
+    resultsBySoilType: "Resultats par Type de Sol",
+    lastTenPredictions: "10 Dernieres Predictions",
+    date: "Date",
+    soil: "Sol",
+    result: "Resultat",
+    loadingAnalytics: "Chargement des analyses...",
+    noAnalytics: "Aucune analyse disponible.",
+    toastWelcome: "Bon retour sur Kilimo Logic",
+    toastLoginFailed: "Echec de connexion",
+    toastAccountCreated: "Compte cree. Connectez-vous pour continuer.",
+    toastRegisterFailed: "Echec de l'inscription",
+    toastSessionExpired: "Session expiree. Veuillez vous reconnecter.",
+    toastEnterLocation: "Entrez d'abord un lieu.",
+    toastWeatherLoaded: "Donnees meteo chargees",
+    toastWeatherFailed: "Impossible de recuperer la meteo",
+    toastPredictionSaved: "Prediction terminee et enregistree",
+    toastPredictionFailed: "Echec de prediction. Verifiez que la meteo est chargee.",
+    toastDashboardFailed: "Impossible de charger les analyses du tableau de bord",
+  },
+};
+
+export const UIProvider = ({ children }) => {
+  const [language, setLanguage] = useState(() => localStorage.getItem(LANGUAGE_KEY) || "en");
+  const [theme, setTheme] = useState(getInitialTheme);
+
+  useEffect(() => {
+    localStorage.setItem(LANGUAGE_KEY, language);
+  }, [language]);
+
+  useEffect(() => {
+    localStorage.setItem(THEME_KEY, theme);
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.body.classList.toggle("dark", theme === "dark");
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
+  const value = useMemo(
+    () => ({
+      language,
+      setLanguage,
+      theme,
+      setTheme,
+      toggleTheme,
+      t: (key) => translations[language]?.[key] || translations.en[key] || key,
+    }),
+    [language, theme]
+  );
+
+  return <UIContext.Provider value={value}>{children}</UIContext.Provider>;
+};
+
+export const useUI = () => {
+  const context = useContext(UIContext);
+  if (!context) {
+    throw new Error("useUI must be used within UIProvider");
+  }
+  return context;
+};

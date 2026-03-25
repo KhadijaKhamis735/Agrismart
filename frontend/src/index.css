@@ -1,0 +1,140 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Domine:wght@500;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  color: #15803d;
+  background-color: #f3f4f6;
+  --app-primary: #15803d;
+  --app-primary-dark: #4ade80;
+  --app-secondary: #ffffff;
+  --app-border-light: #e5e7eb;
+  --app-border-dark: #374151;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  color: var(--app-primary);
+  transition: background-color 220ms ease, color 220ms ease;
+}
+
+.dark {
+  background-color: #111827;
+  color: var(--app-primary-dark);
+}
+
+@layer components {
+  .app-card {
+    @apply rounded-2xl border bg-white shadow-sm transition-colors duration-300;
+    border-color: #e5e7eb;
+    color: var(--app-primary);
+    backdrop-filter: blur(2px);
+  }
+
+  .dark .app-card {
+    @apply bg-gray-800 border-gray-700;
+    color: var(--app-primary-dark);
+  }
+
+  .app-input {
+    @apply rounded-lg border bg-white px-3 py-2 outline-none transition-colors duration-300;
+    border-color: #d1d5db;
+    color: var(--app-primary);
+  }
+
+  .app-input::placeholder {
+    color: #9ca3af;
+  }
+
+  .app-input:focus {
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  }
+
+  .dark .app-input {
+    @apply bg-gray-700;
+    border-color: #4b5563;
+    color: var(--app-primary-dark);
+  }
+
+  .dark .app-input::placeholder {
+    color: #9ca3af;
+  }
+
+  .app-input-readonly {
+    background-color: #f3f4f6;
+    color: var(--app-primary);
+  }
+
+  .dark .app-input-readonly {
+    background-color: #374151;
+    color: var(--app-primary-dark);
+  }
+
+  .app-btn-primary {
+    @apply rounded-lg px-4 py-2 font-semibold text-white transition-colors duration-300 bg-green-600;
+  }
+
+  .app-btn-primary:hover {
+    @apply bg-green-700;
+  }
+
+  .app-btn-primary:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  .app-btn-soft {
+    @apply rounded-lg border px-3 py-2 font-semibold transition-colors duration-300 border-gray-300 text-green-600 bg-gray-50;
+  }
+
+  .app-btn-soft:hover {
+    @apply bg-gray-100;
+  }
+
+  .dark .app-btn-soft {
+    @apply border-gray-600 text-green-400 bg-gray-700;
+  }
+
+  .dark .app-btn-soft:hover {
+    @apply bg-gray-600;
+  }
+
+  /* Select/Dropdown styling */
+  select.app-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f2937' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 20px;
+    padding-right: 28px;
+  }
+
+  .dark select.app-input {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e5e7eb' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  }
+
+  select.app-input option {
+    color: var(--app-primary);
+    background-color: #ffffff;
+  }
+
+  .dark select.app-input option {
+    color: var(--app-primary-dark);
+    background-color: #374151;
+  }
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Domine", Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
