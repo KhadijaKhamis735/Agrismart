@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  overflow-x: hidden;
+}
+
 :root {
   font-family: "Nunito", "Segoe UI", sans-serif;
   color: #15803d;
@@ -13,6 +17,7 @@
   --app-secondary: #ffffff;
   --app-border-light: #e5e7eb;
   --app-border-dark: #374151;
+  overflow-x: hidden;
 }
 
 body {
@@ -21,6 +26,7 @@ body {
   background-color: #f3f4f6;
   color: var(--app-primary);
   transition: background-color 220ms ease, color 220ms ease;
+  overflow-x: hidden;
 }
 
 .dark {
@@ -81,7 +87,7 @@ body {
   }
 
   .app-btn-primary:hover {
-    @apply bg-green-700;
+    @apply bg-green-600;
   }
 
   .app-btn-primary:disabled {
@@ -93,7 +99,7 @@ body {
   }
 
   .app-btn-soft:hover {
-    @apply bg-gray-100;
+    @apply bg-gray-50;
   }
 
   .dark .app-btn-soft {
@@ -101,7 +107,23 @@ body {
   }
 
   .dark .app-btn-soft:hover {
-    @apply bg-gray-600;
+    @apply bg-gray-700;
+  }
+
+  .app-btn-secondary {
+    @apply rounded-lg border px-4 py-2 font-semibold transition-colors duration-300 border-gray-300 text-green-600 bg-gray-50;
+  }
+
+  .app-btn-secondary:hover {
+    @apply bg-gray-50;
+  }
+
+  .dark .app-btn-secondary {
+    @apply border-gray-600 text-green-400 bg-gray-700;
+  }
+
+  .dark .app-btn-secondary:hover {
+    @apply bg-gray-700;
   }
 
   /* Select/Dropdown styling */
@@ -129,10 +151,10 @@ body {
   }
 }
 
-h1,
-h2,
-h3 {
-  font-family: "Domine", Georgia, serif;
+@layer utilities {
+  .max-w-screen-xl-custom {
+    max-width: 1600px;
+  }
 }
 
 * {

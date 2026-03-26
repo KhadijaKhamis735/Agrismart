@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useAuth } from "../context/AuthContext";
 import { useUI } from "../context/UIContext";
+import { sanitizeText } from "../utils/security";
 
 export default function Login() {
   const { login, loading } = useAuth();
@@ -15,7 +16,7 @@ export default function Login() {
   const onSubmit = async (event) => {
     event.preventDefault();
     try {
-      await login(form.username, form.password);
+      await login(sanitizeText(form.username), form.password);
       toast.success(t("toastWelcome"));
       navigate("/predict");
     } catch (error) {
@@ -31,7 +32,7 @@ export default function Login() {
         <input
           type="text"
           value={form.username}
-          onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
+          onChange={(e) => setForm((prev) => ({ ...prev, username: sanitizeText(e.target.value) }))}
           placeholder={t("username")}
           className="app-input"
           required

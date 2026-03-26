@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { BarChart3, Moon, Sun } from "lucide-react";
+import { BarChart3, Moon, Settings, Sun } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
 import { useUI } from "../context/UIContext";
@@ -19,13 +19,14 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`sticky top-0 z-20 border-b text-green-700 shadow-sm dark:text-green-300 ${
+      className={`sticky top-0 z-20 w-full border-b text-green-700 shadow-sm dark:text-green-300 ${
         theme === "dark"
           ? "border-gray-700 bg-gray-800"
           : "border-green-200 bg-green-100"
       }`}
+      style={{ overflowX: "hidden" }}
     >
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-3 py-3 sm:px-4">
+      <div className="mx-auto flex w-[92vw] max-w-screen-xl-custom flex-wrap items-center justify-between gap-2 px-3 py-3 sm:px-4">
         <Link to="/" className="flex items-center gap-2 text-base font-bold tracking-wide sm:text-lg">
           <img src={logoImage} alt="Kilimo Logic logo" className="h-8 w-8 rounded object-contain sm:h-9 sm:w-9" />
           <span className="whitespace-nowrap">Kilimo Logic</span>
@@ -62,33 +63,43 @@ export default function Navbar() {
 
           {isAuthenticated && (
             <>
-            <NavLink
-              to="/predict"
-              className={({ isActive }) =>
-                `rounded-md border border-transparent px-2 py-2 text-xs font-semibold transition sm:px-3 sm:text-sm ${
-                  isActive ? activeClass : "hover:bg-green-200 dark:hover:bg-gray-700"
-                }`
-              }
-            >
-              {t("navPredict")}
-            </NavLink>
-            <NavLink
-              to="/dashboard"
-              className={({ isActive }) =>
-                `inline-flex items-center gap-1 rounded-md border border-transparent px-2 py-2 text-xs font-semibold transition sm:px-3 sm:text-sm ${
-                  isActive ? activeClass : "hover:bg-green-200 dark:hover:bg-gray-700"
-                }`
-              }
-            >
-              <BarChart3 size={16} /> {t("navDashboard")}
-            </NavLink>
-            <button
-              type="button"
-              onClick={onLogout}
-              className="rounded-md border border-green-300 bg-white px-2 py-2 text-xs font-semibold text-green-700 hover:bg-green-100 dark:border-gray-600 dark:bg-gray-700 dark:text-green-300 dark:hover:bg-gray-600 sm:px-3 sm:text-sm"
-            >
-              {t("navLogout")}
-            </button>
+              <NavLink
+                to="/predict"
+                className={({ isActive }) =>
+                  `rounded-md border border-transparent px-2 py-2 text-xs font-semibold transition sm:px-3 sm:text-sm ${
+                    isActive ? activeClass : ""
+                  }`
+                }
+              >
+                {t("navPredict")}
+              </NavLink>
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `inline-flex items-center gap-1 rounded-md border border-transparent px-2 py-2 text-xs font-semibold transition sm:px-3 sm:text-sm ${
+                    isActive ? activeClass : ""
+                  }`
+                }
+              >
+                <BarChart3 size={16} /> {t("navDashboard")}
+              </NavLink>
+              <NavLink
+                to="/settings"
+                className={({ isActive }) =>
+                  `inline-flex items-center gap-1 rounded-md border border-transparent px-2 py-2 text-xs font-semibold transition sm:px-3 sm:text-sm ${
+                    isActive ? activeClass : ""
+                  }`
+                }
+              >
+                <Settings size={16} /> {t("navSettings")}
+              </NavLink>
+              <button
+                type="button"
+                onClick={onLogout}
+                className="rounded-md border border-green-300 bg-white px-2 py-2 text-xs font-semibold text-green-700 dark:border-gray-600 dark:bg-gray-700 dark:text-green-300 sm:px-3 sm:text-sm"
+              >
+                {t("navLogout")}
+              </button>
             </>
           )}
         </div>

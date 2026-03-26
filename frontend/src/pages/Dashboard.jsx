@@ -84,7 +84,7 @@ export default function Dashboard() {
   }));
 
   return (
-    <div className="mx-auto grid w-full max-w-6xl gap-4 sm:gap-5">
+    <div className="mx-auto grid w-full max-w-screen-xl-custom gap-4 sm:gap-5">
       <h1 className="text-xl font-bold text-green-700 dark:text-green-300 sm:text-2xl">{t("dashboardTitle")}</h1>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
