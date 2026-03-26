@@ -591,3 +591,14 @@ Traceback (most recent call last):
     )
 ValueError: Couldn't load 'Argon2PasswordHasher' algorithm library: No module named 'argon2'
 2026-03-26 11:44:06,191 INFO security login_success username=dyda ip=127.0.0.1
+2026-03-26 13:18:08,529 INFO security login_success username=dyda ip=127.0.0.1
+2026-03-26 13:21:09,413 INFO security login_success username=Karen ip=127.0.0.1
+2026-03-26 13:35:20,291 INFO security login_success username=dyda ip=127.0.0.1
+2026-03-26 13:35:46,431 INFO security login_success username=Fede ip=127.0.0.1
+2026-03-26 13:35:58,738 WARNING security login_failed username=LIsa ip=127.0.0.1
+2026-03-26 13:36:07,911 WARNING security login_failed username=LIsa ip=127.0.0.1
+2026-03-26 13:36:14,118 INFO security login_success username=vicky ip=127.0.0.1
+2026-03-26 15:10:29,566 INFO security login_success username=vicky ip=127.0.0.1
+2026-03-26 15:26:45,046 INFO security login_success username=vicky ip=127.0.0.1
+2026-03-26 15:39:16,590 INFO security login_success username=Test ip=127.0.0.1
+2026-03-26 15:43:52,458 INFO security login_success username=vicky ip=127.0.0.1

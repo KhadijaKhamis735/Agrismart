@@ -121,6 +121,8 @@ export default function Dashboard() {
         title={t("resultsBySoilType")}
         soilTickFormatter={toSoilLabel}
         resultLabelFormatter={toResultLabel}
+        xLabel={t("soilType")}
+        yLabel={t("lineChartYAxis")}
       />
 
       <div className="app-card overflow-x-auto rounded-xl p-3 sm:p-4">

@@ -71,6 +71,8 @@ export function SoilBarChart({
   title = "Results by Soil Type",
   soilTickFormatter,
   resultLabelFormatter,
+  xLabel,
+  yLabel,
 }) {
   return (
     <div className="app-card h-72 w-full rounded-xl p-3 sm:h-80">
@@ -78,8 +80,12 @@ export function SoilBarChart({
       <ResponsiveContainer width="100%" height="90%">
         <BarChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 12 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="soil_type" tick={{ fontSize: 12 }} tickFormatter={soilTickFormatter} />
-          <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+          <XAxis dataKey="soil_type" tick={{ fontSize: 12 }} tickFormatter={soilTickFormatter}>
+            {xLabel ? <Label value={xLabel} position="insideBottom" offset={-6} /> : null}
+          </XAxis>
+          <YAxis allowDecimals={false} tick={{ fontSize: 12 }}>
+            {yLabel ? <Label value={yLabel} angle={-90} position="insideLeft" style={{ textAnchor: "middle" }} /> : null}
+          </YAxis>
           <Tooltip
             formatter={(value, name) => [value, resultLabelFormatter ? resultLabelFormatter(name) : name]}
             labelFormatter={(value) => (soilTickFormatter ? soilTickFormatter(value) : value)}
