@@ -25,13 +25,13 @@ export default function Navbar() {
           : "border-green-200 bg-green-100"
       }`}
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link to="/" className="flex items-center gap-2 text-lg font-bold tracking-wide">
-          <img src={logoImage} alt="Kilimo Logic logo" className="h-9 w-9 rounded object-contain" />
-          <span>Kilimo Logic</span>
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-3 py-3 sm:px-4">
+        <Link to="/" className="flex items-center gap-2 text-base font-bold tracking-wide sm:text-lg">
+          <img src={logoImage} alt="Kilimo Logic logo" className="h-8 w-8 rounded object-contain sm:h-9 sm:w-9" />
+          <span className="whitespace-nowrap">Kilimo Logic</span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto sm:flex-nowrap">
           <select
             aria-label={t("navLanguage")}
             value={language}
@@ -47,13 +47,13 @@ export default function Navbar() {
             type="button"
             aria-label={t("navTheme")}
             onClick={toggleTheme}
-            className={`inline-flex h-8 w-16 items-center rounded-full border border-white/30 px-1 transition ${
+            className={`inline-flex h-8 w-14 items-center rounded-full border border-white/30 px-1 transition sm:w-16 ${
               theme === "dark" ? "bg-green-900/60" : "bg-white/20"
             }`}
           >
             <span
               className={`flex h-6 w-6 items-center justify-center rounded-full bg-white text-green-700 transition ${
-                theme === "dark" ? "translate-x-8" : "translate-x-0"
+                theme === "dark" ? "translate-x-6 sm:translate-x-8" : "translate-x-0"
               }`}
             >
               {theme === "dark" ? <Moon size={14} /> : <Sun size={14} />}
@@ -65,7 +65,7 @@ export default function Navbar() {
             <NavLink
               to="/predict"
               className={({ isActive }) =>
-                `rounded-md border border-transparent px-3 py-2 text-sm font-semibold transition ${
+                `rounded-md border border-transparent px-2 py-2 text-xs font-semibold transition sm:px-3 sm:text-sm ${
                   isActive ? activeClass : "hover:bg-green-200 dark:hover:bg-gray-700"
                 }`
               }
@@ -75,7 +75,7 @@ export default function Navbar() {
             <NavLink
               to="/dashboard"
               className={({ isActive }) =>
-                `inline-flex items-center gap-1 rounded-md border border-transparent px-3 py-2 text-sm font-semibold transition ${
+                `inline-flex items-center gap-1 rounded-md border border-transparent px-2 py-2 text-xs font-semibold transition sm:px-3 sm:text-sm ${
                   isActive ? activeClass : "hover:bg-green-200 dark:hover:bg-gray-700"
                 }`
               }
@@ -85,7 +85,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={onLogout}
-              className="rounded-md border border-green-300 bg-white px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-100 dark:border-gray-600 dark:bg-gray-700 dark:text-green-300 dark:hover:bg-gray-600"
+              className="rounded-md border border-green-300 bg-white px-2 py-2 text-xs font-semibold text-green-700 hover:bg-green-100 dark:border-gray-600 dark:bg-gray-700 dark:text-green-300 dark:hover:bg-gray-600 sm:px-3 sm:text-sm"
             >
               {t("navLogout")}
             </button>

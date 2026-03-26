@@ -9,25 +9,6 @@ const soilTypes = [
   { value: "Peaty", key: "soilPeaty" },
 ];
 
-const Toggle = ({ label, value, onChange }) => (
-  <div className="app-card flex items-center justify-between rounded-xl p-3">
-    <span className="font-medium text-green-700 dark:text-green-300">{label}</span>
-    <button
-      type="button"
-      onClick={() => onChange(!value)}
-      className={`relative h-7 w-14 rounded-full transition ${
-        value ? "bg-green-600 dark:bg-green-500" : "bg-gray-300 dark:bg-gray-600"
-      }`}
-    >
-      <span
-        className={`absolute top-1 h-5 w-5 rounded-full bg-white transition ${
-          value ? "left-8" : "left-1"
-        }`}
-      />
-    </button>
-  </div>
-);
-
 export default function PredictionForm({ form, setForm, onWeatherFetch, weatherLoading, onSubmit, loading }) {
   const { t } = useUI();
 
@@ -52,16 +33,43 @@ export default function PredictionForm({ form, setForm, onWeatherFetch, weatherL
         </select>
       </label>
 
-      <Toggle
-        label={t("irrigation")}
-        value={form.irrigation}
-        onChange={(next) => setForm((prev) => ({ ...prev, irrigation: next }))}
-      />
-      <Toggle
-        label={t("fertilizerUsed")}
-        value={form.fertilizer_used}
-        onChange={(next) => setForm((prev) => ({ ...prev, fertilizer_used: next }))}
-      />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="grid gap-2">
+          <span className="text-sm font-semibold text-green-700 dark:text-green-300">{t("irrigation")}</span>
+          <select
+            value={String(form.irrigation)}
+            onChange={(e) => setForm((prev) => ({ ...prev, irrigation: e.target.value === "true" }))}
+            className="app-input"
+          >
+            <option value="true">{t("yes")}</option>
+            <option value="false">{t("no")}</option>
+          </select>
+        </label>
+        <label className="grid gap-2">
+          <span className="text-sm font-semibold text-green-700 dark:text-green-300">{t("fertilizerUsed")}</span>
+          <select
+            value={String(form.fertilizer_used)}
+            onChange={(e) => setForm((prev) => ({ ...prev, fertilizer_used: e.target.value === "true" }))}
+            className="app-input"
+          >
+            <option value="true">{t("yes")}</option>
+            <option value="false">{t("no")}</option>
+          </select>
+        </label>
+      </div>
+
+      <label className="grid gap-2">
+        <span className="text-sm font-semibold text-green-700 dark:text-green-300">{t("daysOfHarvest")}</span>
+        <input
+          type="number"
+          min="1"
+          value={form.days_of_harvest}
+          onChange={(e) => setForm((prev) => ({ ...prev, days_of_harvest: e.target.value }))}
+          placeholder={t("daysOfHarvestPlaceholder")}
+          className="app-input"
+          required
+        />
+      </label>
 
       <label className="grid gap-2">
         <span className="text-sm font-semibold text-green-700 dark:text-green-300">{t("location")}</span>
@@ -69,29 +77,21 @@ export default function PredictionForm({ form, setForm, onWeatherFetch, weatherL
           <input
             type="text"
             value={form.location}
-            onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))}
             placeholder={t("locationPlaceholder")}
-            className="app-input w-full"
+            className="app-input app-input-readonly w-full"
+            readOnly
             required
           />
           <button
             type="button"
             onClick={() => onWeatherFetch({ useGeo: true })}
-            className="app-btn-primary inline-flex items-center gap-1 text-sm"
+            disabled={weatherLoading}
+            className="app-btn-primary inline-flex items-center gap-1 text-sm disabled:cursor-not-allowed"
           >
-            <LocateFixed size={16} /> {t("useMyLocation")}
+            <LocateFixed size={16} /> {weatherLoading ? t("fetchingWeather") : t("useMyLocation")}
           </button>
         </div>
       </label>
-
-      <button
-        type="button"
-        onClick={() => onWeatherFetch({ useGeo: false })}
-        disabled={weatherLoading}
-        className="app-btn-soft disabled:cursor-not-allowed"
-      >
-        {weatherLoading ? t("fetchingWeather") : t("fetchWeather")}
-      </button>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="grid gap-2">

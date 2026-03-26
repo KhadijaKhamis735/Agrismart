@@ -1,10 +1,19 @@
+import { useUI } from "../context/UIContext";
+
 const resultStyles = {
   High: "bg-green-100 text-green-800 border-green-300",
   Medium: "bg-yellow-100 text-yellow-800 border-yellow-300",
   Low: "bg-red-100 text-red-800 border-red-300",
 };
 
+const resultTextKey = {
+  High: "resultHigh",
+  Medium: "resultMedium",
+  Low: "resultLow",
+};
+
 export default function ResultBadge({ result }) {
+  const { t } = useUI();
   if (!result) return null;
   return (
     <span
@@ -12,7 +21,7 @@ export default function ResultBadge({ result }) {
         resultStyles[result] || "bg-green-100 text-green-700 border-green-300"
       }`}
     >
-      {result}
+      {t(resultTextKey[result] || result)}
     </span>
   );
 }

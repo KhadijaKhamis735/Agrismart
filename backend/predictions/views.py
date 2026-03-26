@@ -28,6 +28,7 @@ class PredictionListCreateView(APIView):
             soil_type=payload["soil_type"],
             irrigation=payload["irrigation"],
             fertilizer_used=payload["fertilizer_used"],
+            days_of_harvest=payload["days_of_harvest"],
             temperature=payload["temperature"],
             rainfall=payload["rainfall"],
         )
@@ -37,6 +38,7 @@ class PredictionListCreateView(APIView):
             soil_type=payload["soil_type"],
             irrigation=payload["irrigation"],
             fertilizer_used=payload["fertilizer_used"],
+            days_of_harvest=payload["days_of_harvest"],
             location=payload["location"],
             temperature=payload["temperature"],
             rainfall=payload["rainfall"],

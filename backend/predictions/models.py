@@ -19,6 +19,7 @@ class Prediction(models.Model):
     soil_type = models.CharField(max_length=20, choices=SoilType.choices)
     irrigation = models.BooleanField()
     fertilizer_used = models.BooleanField()
+    days_of_harvest = models.PositiveIntegerField(default=110)
     location = models.CharField(max_length=255)
     temperature = models.DecimalField(max_digits=5, decimal_places=2)
     rainfall = models.DecimalField(max_digits=7, decimal_places=2)

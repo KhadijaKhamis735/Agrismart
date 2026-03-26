@@ -22,7 +22,7 @@ function App() {
       }`}
     >
       <Navbar />
-      <main className="mx-auto max-w-6xl px-4 py-8">
+      <main className="mx-auto w-full max-w-6xl px-3 py-5 sm:px-4 sm:py-8 lg:px-6">
         <Routes>
           <Route path="/login" element={isAuthenticated ? <Navigate to="/predict" replace /> : <Login />} />
           <Route

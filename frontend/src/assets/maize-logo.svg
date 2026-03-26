@@ -1,0 +1,37 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kilimo Logic maize logo">
+  <defs>
+    <linearGradient id="bg" x1="20" y1="12" x2="108" y2="116" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#16a34a"/>
+      <stop offset="1" stop-color="#14532d"/>
+    </linearGradient>
+    <linearGradient id="cob" x1="64" y1="30" x2="64" y2="102" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fde68a"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="64" cy="64" r="60" fill="url(#bg)"/>
+  <circle cx="64" cy="64" r="56" fill="none" stroke="#86efac" stroke-opacity="0.45" stroke-width="2"/>
+
+  <path d="M64 28C75 28 84 37 84 48V84C84 95 75 104 64 104C53 104 44 95 44 84V48C44 37 53 28 64 28Z" fill="url(#cob)" stroke="#b45309" stroke-width="2"/>
+
+  <path d="M64 34V98" stroke="#b45309" stroke-opacity="0.45" stroke-width="1.4"/>
+  <path d="M52 40V92" stroke="#b45309" stroke-opacity="0.3" stroke-width="1.2"/>
+  <path d="M76 40V92" stroke="#b45309" stroke-opacity="0.3" stroke-width="1.2"/>
+
+  <g fill="#fbbf24" stroke="#b45309" stroke-width="0.9">
+    <ellipse cx="58" cy="44" rx="4" ry="3"/>
+    <ellipse cx="70" cy="44" rx="4" ry="3"/>
+    <ellipse cx="58" cy="54" rx="4" ry="3"/>
+    <ellipse cx="70" cy="54" rx="4" ry="3"/>
+    <ellipse cx="58" cy="64" rx="4" ry="3"/>
+    <ellipse cx="70" cy="64" rx="4" ry="3"/>
+    <ellipse cx="58" cy="74" rx="4" ry="3"/>
+    <ellipse cx="70" cy="74" rx="4" ry="3"/>
+    <ellipse cx="58" cy="84" rx="4" ry="3"/>
+    <ellipse cx="70" cy="84" rx="4" ry="3"/>
+  </g>
+
+  <path d="M44 54C33 61 28 74 30 88C37 84 44 76 46 66" fill="#22c55e"/>
+  <path d="M84 54C95 61 100 74 98 88C91 84 84 76 82 66" fill="#22c55e"/>
+</svg>

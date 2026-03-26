@@ -12,6 +12,7 @@ const initialForm = {
   soil_type: "Sandy",
   irrigation: false,
   fertilizer_used: false,
+  days_of_harvest: "",
   location: "",
   temperature: "",
   rainfall: "",
@@ -25,10 +26,12 @@ export default function Predict() {
   const [predictLoading, setPredictLoading] = useState(false);
   const [result, setResult] = useState(null);
 
-  const onWeatherFetch = async ({ useGeo }) => {
+  const onWeatherFetch = async ({ useGeo = false, silent = false } = {}) => {
     const token = await ensureValidToken();
     if (!token) {
-      toast.error(t("toastSessionExpired"));
+      if (!silent) {
+        toast.error(t("toastSessionExpired"));
+      }
       return;
     }
 
@@ -45,7 +48,9 @@ export default function Predict() {
         };
       } else {
         if (!form.location) {
-          toast.error(t("toastEnterLocation"));
+          if (!silent) {
+            toast.error(t("toastEnterLocation"));
+          }
           return;
         }
         params = { location: form.location };
@@ -58,9 +63,18 @@ export default function Predict() {
         temperature: data.temperature,
         rainfall: data.rainfall,
       }));
-      toast.success(t("toastWeatherLoaded"));
+      if (!silent) {
+        toast.success(t("toastWeatherLoaded"));
+      }
+      return {
+        temperature: data.temperature,
+        rainfall: data.rainfall,
+      };
     } catch (error) {
-      toast.error(error.response?.data?.detail || t("toastWeatherFailed"));
+      if (!silent) {
+        toast.error(error.response?.data?.detail || t("toastWeatherFailed"));
+      }
+      throw error;
     } finally {
       setWeatherLoading(false);
     }
@@ -76,16 +90,22 @@ export default function Predict() {
 
     setPredictLoading(true);
     try {
+      // Keep weather retrieval automatic and off the main form controls.
+      const weatherData = await onWeatherFetch({
+        silent: true,
+        useGeo: !form.location,
+      });
       const payload = {
         ...form,
-        temperature: Number(form.temperature),
-        rainfall: Number(form.rainfall),
+        days_of_harvest: Number(form.days_of_harvest),
+        temperature: Number(weatherData?.temperature ?? form.temperature),
+        rainfall: Number(weatherData?.rainfall ?? form.rainfall),
       };
       const { data } = await createPrediction(payload, token);
       setResult(data.result);
       toast.success(t("toastPredictionSaved"));
     } catch (error) {
-      toast.error(t("toastPredictionFailed"));
+      toast.error(error.response?.data?.detail || t("toastPredictionFailed"));
     } finally {
       setPredictLoading(false);
     }

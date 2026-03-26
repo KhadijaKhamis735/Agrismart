@@ -1,4 +1,4 @@
-def predict_yield_level(soil_type, irrigation, fertilizer_used, temperature, rainfall):
+def predict_yield_level(soil_type, irrigation, fertilizer_used, days_of_harvest, temperature, rainfall):
     """Placeholder prediction logic.
 
     # TODO: Load trained model here and replace placeholder logic
@@ -21,13 +21,17 @@ def predict_yield_level(soil_type, irrigation, fertilizer_used, temperature, rai
     if fertilizer_used:
         score += 1
 
+    # Typical maize maturity window; values inside this range tend to perform better.
+    if 85 <= int(days_of_harvest) <= 130:
+        score += 1
+
     if 20 <= float(temperature) <= 30:
         score += 1
 
     if 40 <= float(rainfall) <= 120:
         score += 1
 
-    if score >= 5:
+    if score >= 6:
         return "High"
     if score >= 3:
         return "Medium"

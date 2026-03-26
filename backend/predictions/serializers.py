@@ -14,6 +14,7 @@ class PredictionSerializer(serializers.ModelSerializer):
             "soil_type",
             "irrigation",
             "fertilizer_used",
+            "days_of_harvest",
             "location",
             "temperature",
             "rainfall",
