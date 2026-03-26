@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { createPrediction, fetchWeather } from "../api/endpoints";
 import LoadingSpinner from "../components/LoadingSpinner";
 import PredictionForm from "../components/PredictionForm";
-import ResultBadge from "../components/ResultBadge";
+import PredictionResultDisplay from "../components/PredictionResultDisplay";
 import { useAuth } from "../context/AuthContext";
 import { useUI } from "../context/UIContext";
 
@@ -150,14 +150,14 @@ export default function Predict() {
 
   return (
     <div className="mx-auto grid w-full max-w-screen-xl-custom gap-6">
-      <div className="app-card rounded-2xl border border-green-200 p-6 shadow-sm dark:border-gray-700">
+      <div className="p-1">
         <h1 className="text-2xl font-bold text-green-700 dark:text-green-300">
           {username ? `${t("welcomeGreeting")}, ${username}!` : t("welcome")}
         </h1>
         <p className="mt-4 text-2xl font-bold text-green-700 dark:text-green-300">{t("maizePredictionTitle")}</p>
       </div>
 
-      <div className="min-h-96">
+      <div className="mx-auto w-full max-w-[500px]">
         <PredictionForm
           form={form}
           setForm={setForm}
@@ -171,20 +171,12 @@ export default function Predict() {
       {(weatherLoading || predictLoading) && <LoadingSpinner label={t("pleaseWait")} />}
 
       {result && (
-        <div className="app-card rounded-xl p-4">
-          <p className="mb-2 text-sm font-semibold text-green-700 dark:text-green-300">{t("predictionResult")}</p>
-          <ResultBadge result={result} />
-
-          {recommendationsByResult[String(result).toLowerCase()] && (
-            <div className="mt-4 rounded-xl bg-white p-4 text-gray-800 shadow dark:bg-gray-800 dark:text-white">
-              <p className="mb-2 text-sm font-semibold">{t("recommendationsTitle")}</p>
-              <ul className="list-inside list-disc space-y-1 text-sm">
-                {recommendationsByResult[String(result).toLowerCase()].map((itemKey) => (
-                  <li key={itemKey}>{t(itemKey)}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+        <div className="mx-auto w-full max-w-[500px]">
+          <PredictionResultDisplay
+            result={result}
+            username={username}
+            recommendations={recommendationsByResult[String(result).toLowerCase()]?.map((key) => t(key))}
+          />
         </div>
       )}
     </div>

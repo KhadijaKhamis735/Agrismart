@@ -44,7 +44,7 @@ export default function PredictionForm({ form, setForm, onWeatherFetch, weatherL
   };
 
   return (
-    <form onSubmit={handleSubmit} className="app-card grid gap-6 p-6">
+    <form onSubmit={handleSubmit} className="app-card mx-auto w-full max-w-[500px] grid gap-5 p-4 sm:p-5">
       {/* Progress Bar */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
@@ -69,19 +69,21 @@ export default function PredictionForm({ form, setForm, onWeatherFetch, weatherL
       {/* Step 0: Soil Type */}
       {step === 0 && (
         <div className="grid gap-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">{t("soilType")}</p>
-          <select
-            value={form.soil_type}
-            onChange={(e) => setForm((prev) => ({ ...prev, soil_type: e.target.value }))}
-            className="app-input text-base"
-            required
-          >
-            {soilTypes.map((soil) => (
-              <option key={soil.value} value={soil.value}>
-                {t(soil.key)}
-              </option>
-            ))}
-          </select>
+          <label className="grid gap-2">
+            <span className="text-sm font-semibold text-green-700 dark:text-green-300">{t("soilType")}</span>
+            <select
+              value={form.soil_type}
+              onChange={(e) => setForm((prev) => ({ ...prev, soil_type: e.target.value }))}
+              className="app-input w-full text-base"
+              required
+            >
+              {soilTypes.map((soil) => (
+                <option key={soil.value} value={soil.value}>
+                  {t(soil.key)}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
       )}
 
@@ -225,14 +227,14 @@ export default function PredictionForm({ form, setForm, onWeatherFetch, weatherL
       )}
 
       {/* Navigation Buttons */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <button
           type="button"
           onClick={handlePrev}
           disabled={step === 0}
           className="app-btn-secondary inline-flex items-center justify-center gap-2 py-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <ChevronLeft size={18} /> Previous
+          <ChevronLeft size={18} /> {t("formPrevious")}
         </button>
 
         {isLastStep ? (
@@ -249,7 +251,7 @@ export default function PredictionForm({ form, setForm, onWeatherFetch, weatherL
             onClick={handleNext}
             className="app-btn-primary inline-flex items-center justify-center gap-2 py-2"
           >
-            Next <ChevronRight size={18} />
+            {t("formNext")} <ChevronRight size={18} />
           </button>
         )}
       </div>

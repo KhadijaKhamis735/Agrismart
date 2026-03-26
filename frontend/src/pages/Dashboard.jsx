@@ -1,25 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
 import { getPredictionStats } from "../api/endpoints";
-import { PieResultChart, SoilBarChart, TrendLineChart } from "../components/Charts";
+import { PieResultChart } from "../components/Charts";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ResultBadge from "../components/ResultBadge";
+import { YIELD_RANGES } from "../components/Charts";
 import { useAuth } from "../context/AuthContext";
 import { useUI } from "../context/UIContext";
-
-const SummaryCard = ({ title, value }) => (
-  <div className="app-card rounded-xl p-3 sm:p-4">
-    <p className="text-xs font-semibold uppercase text-green-700 dark:text-green-300">{title}</p>
-    <p className="mt-2 text-xl font-bold text-green-700 dark:text-green-300 sm:text-2xl">{value || "-"}</p>
-  </div>
-);
 
 export default function Dashboard() {
   const { ensureValidToken } = useAuth();
   const { t, language } = useUI();
+
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    dateRange: "all",
+    soilType: "all",
+    temperatureRange: "all",
+    rainfallRange: "all",
+  });
 
   useEffect(() => {
     const loadStats = async () => {
@@ -42,15 +43,15 @@ export default function Dashboard() {
     loadStats();
   }, [ensureValidToken, t]);
 
-  const formatDate = (value) => {
-    const locale = language === "sw" ? "sw-TZ" : language === "fr" ? "fr-FR" : "en-US";
-    return new Date(value).toLocaleString(locale);
-  };
-
-  const resultLabelMap = {
-    High: t("resultHigh"),
-    Medium: t("resultMedium"),
-    Low: t("resultLow"),
+  const formatFullDate = (value) => {
+    const date = new Date(value);
+    if (language === "sw") {
+      return date.toLocaleDateString("sw-TZ", { month: "short", day: "numeric", year: "numeric" });
+    }
+    if (language === "fr") {
+      return date.toLocaleDateString("fr-FR", { month: "short", day: "numeric", year: "numeric" });
+    }
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   };
 
   const soilLabelMap = {
@@ -61,8 +62,70 @@ export default function Dashboard() {
     Peaty: t("soilPeaty"),
   };
 
-  const toResultLabel = (value) => resultLabelMap[value] || value;
-  const toSoilLabel = (value) => soilLabelMap[value] || value;
+  const resultLabelMap = {
+    High: t("resultHigh"),
+    Medium: t("resultMedium"),
+    Low: t("resultLow"),
+  };
+
+  const soilOptions = useMemo(() => {
+    const history = stats?.recent || [];
+    return [...new Set(history.map((item) => item.soil_type))].filter(Boolean);
+  }, [stats]);
+
+  const filteredHistory = useMemo(() => {
+    const history = stats?.recent || [];
+    return history.filter((item) => {
+      const itemDate = new Date(item.created_at);
+
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const dateRangeCutoff = new Date(now);
+      if (filters.dateRange === "7days") dateRangeCutoff.setDate(now.getDate() - 7);
+      if (filters.dateRange === "30days") dateRangeCutoff.setDate(now.getDate() - 30);
+      if (filters.dateRange === "90days") dateRangeCutoff.setDate(now.getDate() - 90);
+
+      const matchesDate =
+        filters.dateRange === "all" ||
+        (filters.dateRange === "today" && itemDate >= startOfToday) ||
+        (filters.dateRange !== "today" && filters.dateRange !== "all" && itemDate >= dateRangeCutoff);
+
+      const matchesSoil = filters.soilType === "all" || item.soil_type === filters.soilType;
+
+      const temp = Number(item.temperature);
+      const rain = Number(item.rainfall);
+
+      const matchesTemp =
+        filters.temperatureRange === "all" ||
+        (filters.temperatureRange === "cool" && temp < 20) ||
+        (filters.temperatureRange === "mild" && temp >= 20 && temp < 25) ||
+        (filters.temperatureRange === "warm" && temp >= 25 && temp < 30) ||
+        (filters.temperatureRange === "hot" && temp >= 30);
+
+      const matchesRain =
+        filters.rainfallRange === "all" ||
+        (filters.rainfallRange === "low" && rain < 50) ||
+        (filters.rainfallRange === "medium" && rain >= 50 && rain <= 100) ||
+        (filters.rainfallRange === "high" && rain > 100);
+
+      return (
+        matchesDate &&
+        matchesSoil &&
+        matchesTemp &&
+        matchesRain
+      );
+    });
+  }, [filters, stats]);
+
+  const pieData = useMemo(
+    () =>
+      (stats?.pie || []).map((entry) => ({
+        ...entry,
+        resultKey: entry.name,
+        name: resultLabelMap[entry.name] || entry.name,
+      })),
+    [stats, resultLabelMap]
+  );
 
   if (loading) {
     return <LoadingSpinner label={t("loadingAnalytics")} />;
@@ -72,87 +135,116 @@ export default function Dashboard() {
     return <p className="text-center text-sm text-green-700 dark:text-green-300">{t("noAnalytics")}</p>;
   }
 
-  const pieData = (stats.pie || []).map((entry) => ({
-    ...entry,
-    resultKey: entry.name,
-    name: toResultLabel(entry.name),
-  }));
-
-  const simpleLineData = (stats.line || []).map((entry) => ({
-    date: entry.date,
-    total: (entry.High || 0) + (entry.Medium || 0) + (entry.Low || 0),
-  }));
-
   return (
-    <div className="mx-auto grid w-full max-w-screen-xl-custom gap-4 sm:gap-5">
-      <h1 className="text-xl font-bold text-green-700 dark:text-green-300 sm:text-2xl">{t("dashboardTitle")}</h1>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <SummaryCard title={t("totalPredictions")} value={stats.summary.total_predictions} />
-        <SummaryCard title={t("mostCommonResult")} value={toResultLabel(stats.summary.most_common_result)} />
-        <div className="app-card rounded-xl p-4">
-          <p className="text-xs font-semibold uppercase text-green-700 dark:text-green-300">{t("latestResult")}</p>
-          <div className="mt-3">
-            <ResultBadge result={stats.summary.latest_result} />
-          </div>
-        </div>
-        <SummaryCard
-          title={t("lastPredictionDate")}
-          value={
-            stats.summary.last_prediction_date
-              ? formatDate(stats.summary.last_prediction_date)
-              : "-"
-          }
-        />
+    <div className="mx-auto w-full max-w-screen-xl-custom space-y-6">
+      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+        <h1 className="text-2xl font-bold text-green-700 dark:text-green-300">{t("dashboardTitle")}</h1>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="app-card rounded-xl p-4 sm:p-5">
+          <p className="text-xs font-semibold uppercase text-gray-600 dark:text-gray-400">{t("totalPredictions")}</p>
+          <p className="mt-2 text-3xl font-bold text-green-700 dark:text-green-300">{stats.summary.total_predictions || 0}</p>
+        </div>
         <PieResultChart data={pieData} title={t("resultDistribution")} />
-        <TrendLineChart
-          data={simpleLineData}
-          title={t("predictionTrend")}
-          xLabel={t("lineChartXAxis")}
-          yLabel={t("lineChartTotal")}
-        />
       </div>
 
-      <SoilBarChart
-        data={stats.bar}
-        title={t("resultsBySoilType")}
-        soilTickFormatter={toSoilLabel}
-        resultLabelFormatter={toResultLabel}
-        xLabel={t("soilType")}
-        yLabel={t("lineChartYAxis")}
-      />
+      <div className="app-card rounded-xl p-4 sm:p-5">
+        <p className="text-xs font-semibold uppercase text-gray-600 dark:text-gray-400">{t("predictionHistoryFilter")}</p>
+        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <select
+            value={filters.dateRange}
+            onChange={(e) => setFilters((prev) => ({ ...prev, dateRange: e.target.value }))}
+            className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            aria-label={t("date")}
+          >
+            <option value="all">{t("filterAllTime")}</option>
+            <option value="today">{t("filterToday")}</option>
+            <option value="7days">{t("filterLast7Days")}</option>
+            <option value="30days">{t("filterLast30Days")}</option>
+            <option value="90days">{t("filterLast90Days")}</option>
+          </select>
 
-      <div className="app-card overflow-x-auto rounded-xl p-3 sm:p-4">
-        <h3 className="mb-3 text-sm font-semibold text-green-700 dark:text-green-300">{t("lastTenPredictions")}</h3>
-        <table className="min-w-[700px] text-left text-sm">
-          <thead>
-            <tr className="border-b border-gray-200 text-green-700 dark:border-gray-700 dark:text-green-300">
-              <th className="py-2 pr-3">{t("date")}</th>
-              <th className="py-2 pr-3">{t("soil")}</th>
-              <th className="py-2 pr-3">{t("location")}</th>
-              <th className="py-2 pr-3">{t("temperature")}</th>
-              <th className="py-2 pr-3">{t("rainfall")}</th>
-              <th className="py-2 pr-3">{t("result")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {stats.recent.map((row) => (
-              <tr key={row.id} className="border-b border-gray-100 text-green-700 last:border-0 dark:border-gray-700 dark:text-green-300">
-                <td className="py-2 pr-3">{formatDate(row.created_at)}</td>
-                <td className="py-2 pr-3">{toSoilLabel(row.soil_type)}</td>
-                <td className="py-2 pr-3">{row.location}</td>
-                <td className="py-2 pr-3">{row.temperature}</td>
-                <td className="py-2 pr-3">{row.rainfall}</td>
-                <td className="py-2 pr-3">
-                  <ResultBadge result={row.result} />
-                </td>
-              </tr>
+          <select
+            value={filters.soilType}
+            onChange={(e) => setFilters((prev) => ({ ...prev, soilType: e.target.value }))}
+            className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            aria-label={t("soil")}
+          >
+            <option value="all">{t("filterAllSoilTypes")}</option>
+            {soilOptions.map((soil) => (
+              <option key={soil} value={soil}>
+                {soilLabelMap[soil] || soil}
+              </option>
             ))}
-          </tbody>
-        </table>
+          </select>
+
+          <select
+            value={filters.temperatureRange}
+            onChange={(e) => setFilters((prev) => ({ ...prev, temperatureRange: e.target.value }))}
+            className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            aria-label={t("temperature")}
+          >
+            <option value="all">{t("filterTemperatureAll")}</option>
+            <option value="cool">{t("filterTemperatureCool")}</option>
+            <option value="mild">{t("filterTemperatureMild")}</option>
+            <option value="warm">{t("filterTemperatureWarm")}</option>
+            <option value="hot">{t("filterTemperatureHot")}</option>
+          </select>
+
+          <select
+            value={filters.rainfallRange}
+            onChange={(e) => setFilters((prev) => ({ ...prev, rainfallRange: e.target.value }))}
+            className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            aria-label={t("rainfall")}
+          >
+            <option value="all">{t("filterRainfallAll")}</option>
+            <option value="low">{t("filterRainfallLow")}</option>
+            <option value="medium">{t("filterRainfallMedium")}</option>
+            <option value="high">{t("filterRainfallHigh")}</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="app-card overflow-x-auto rounded-xl p-4">
+        <h3 className="mb-4 text-sm font-semibold text-green-700 dark:text-green-300">{t("predictionHistory")}</h3>
+        {filteredHistory.length > 0 ? (
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-gray-200 text-green-700 dark:border-gray-700 dark:text-green-300">
+                <th className="px-3 py-3">{t("date")}</th>
+                <th className="px-3 py-3">{t("soil")}</th>
+                <th className="px-3 py-3">{t("location")}</th>
+                <th className="px-3 py-3">{t("temperature")}°C</th>
+                <th className="px-3 py-3">{t("rainfall")}mm</th>
+                <th className="px-3 py-3">{t("result")}</th>
+                <th className="px-3 py-3">{t("yieldRange")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredHistory.map((row) => (
+                <tr
+                  key={row.id}
+                  className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 last:border-0 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                >
+                  <td className="px-3 py-3 text-xs">{formatFullDate(row.created_at)}</td>
+                  <td className="px-3 py-3">{soilLabelMap[row.soil_type] || row.soil_type}</td>
+                  <td className="px-3 py-3">{row.location}</td>
+                  <td className="px-3 py-3">{row.temperature}</td>
+                  <td className="px-3 py-3">{row.rainfall}</td>
+                  <td className="px-3 py-3">
+                    <ResultBadge result={row.result} />
+                  </td>
+                  <td className="px-3 py-3 text-xs text-gray-600 dark:text-gray-400">
+                    {YIELD_RANGES[row.result] || "N/A"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="text-center text-sm text-gray-500 dark:text-gray-400">{t("noAnalytics")}</p>
+        )}
       </div>
     </div>
   );

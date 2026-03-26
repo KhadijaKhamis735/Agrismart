@@ -109,7 +109,7 @@ class PredictionStatsView(APIView):
             "last_prediction_date": latest.created_at if latest else None,
         }
 
-        last_10 = PredictionSerializer(list(reversed(all_predictions[-10:])), many=True).data
+        prediction_history = PredictionSerializer(list(reversed(all_predictions)), many=True).data
 
         return Response(
             {
@@ -117,6 +117,6 @@ class PredictionStatsView(APIView):
                 "pie": pie_data,
                 "line": line_data,
                 "bar": bar_data,
-                "recent": last_10,
+                "recent": prediction_history,
             }
         )
