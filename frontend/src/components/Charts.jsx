@@ -3,6 +3,8 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  ComposedChart,
+  LabelList,
   Legend,
   Label,
   Line,
@@ -201,6 +203,116 @@ export function SoilBarChart({
           <Bar dataKey="Medium" fill={COLORS.Medium} />
           <Bar dataKey="Low" fill={COLORS.Low} />
         </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function MixedTrendChart({
+  data,
+  title = "Prediction Trend",
+  xLabel = "Date",
+  yLabel = "Predictions",
+  totalLabel = "Total",
+}) {
+  const hasData = data && data.length > 0;
+
+  if (!hasData) {
+    return (
+      <div className="app-card h-72 w-full rounded-xl p-3 sm:h-80">
+        <h3 className="mb-2 text-sm font-semibold text-green-700 dark:text-green-300">{title}</h3>
+        <div className="flex h-[90%] items-center justify-center">
+          <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+            No trend data available yet.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app-card h-72 w-full rounded-xl p-3 sm:h-80">
+      <h3 className="mb-2 text-sm font-semibold text-green-700 dark:text-green-300">{title}</h3>
+      <ResponsiveContainer width="100%" height="90%">
+        <ComposedChart data={data} margin={{ top: 8, right: 16, left: 4, bottom: 28 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" tick={{ fontSize: 12 }} minTickGap={22}>
+            <Label value={xLabel} position="insideBottom" offset={-18} />
+          </XAxis>
+          <YAxis allowDecimals={false} tick={{ fontSize: 12 }}>
+            <Label value={yLabel} angle={-90} position="insideLeft" style={{ textAnchor: "middle" }} />
+          </YAxis>
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="High" stackId="results" fill={COLORS.High} />
+          <Bar dataKey="Medium" stackId="results" fill={COLORS.Medium} />
+          <Bar dataKey="Low" stackId="results" fill={COLORS.Low} />
+          <Line type="monotone" dataKey="total" name={totalLabel} stroke={COLORS.Total} strokeWidth={3} dot={{ r: 2 }} />
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function InputImpactBarChart({
+  data,
+  title = "Impact of Inputs",
+  xLabel = "Input",
+  yLabel = "Impact Score (%)",
+  countLabel = "Sample Size",
+  impactLegendLabel = "High Yield Share",
+  countLegendLabel = "Predictions",
+}) {
+  const hasData = data && data.length > 0;
+
+  if (!hasData) {
+    return (
+      <div className="app-card h-72 w-full rounded-xl p-3 sm:h-80">
+        <h3 className="mb-2 text-sm font-semibold text-green-700 dark:text-green-300">{title}</h3>
+        <div className="flex h-[90%] items-center justify-center">
+          <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+            No input impact data available yet.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app-card h-72 w-full rounded-xl p-3 sm:h-80">
+      <h3 className="mb-2 text-sm font-semibold text-green-700 dark:text-green-300">{title}</h3>
+      <ResponsiveContainer width="100%" height="90%">
+        <ComposedChart data={data} margin={{ top: 10, right: 16, left: 4, bottom: 28 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" tick={{ fontSize: 12 }}>
+            <Label value={xLabel} position="insideBottom" offset={-18} />
+          </XAxis>
+          <YAxis yAxisId="left" domain={[0, 100]} tick={{ fontSize: 12 }}>
+            <Label value={yLabel} angle={-90} position="insideLeft" style={{ textAnchor: "middle" }} />
+          </YAxis>
+          <YAxis yAxisId="right" orientation="right" allowDecimals={false} tick={{ fontSize: 12 }}>
+            <Label value={countLabel} angle={90} position="insideRight" style={{ textAnchor: "middle" }} />
+          </YAxis>
+          <Tooltip
+            formatter={(value, name) => {
+              if (name === "impact") return [`${Number(value).toFixed(1)}%`, impactLegendLabel];
+              if (name === "sampleCount") return [Number(value), countLegendLabel];
+              return [value, name];
+            }}
+            labelFormatter={(value) => `${xLabel}: ${value}`}
+          />
+          <Legend
+            formatter={(value) => {
+              if (value === "impact") return impactLegendLabel;
+              if (value === "sampleCount") return countLegendLabel;
+              return value;
+            }}
+          />
+          <Bar yAxisId="left" dataKey="impact" fill={COLORS.Total} radius={[8, 8, 0, 0]}>
+            <LabelList dataKey="impact" position="top" formatter={(value) => `${Number(value).toFixed(0)}%`} />
+          </Bar>
+          <Line yAxisId="right" type="monotone" dataKey="sampleCount" stroke={COLORS.Medium} strokeWidth={3} dot={{ r: 3 }} />
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );

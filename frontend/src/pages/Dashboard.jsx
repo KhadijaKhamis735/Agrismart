@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
 import { getPredictionStats } from "../api/endpoints";
-import { PieResultChart } from "../components/Charts";
+import { InputImpactBarChart, PieResultChart } from "../components/Charts";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ResultBadge from "../components/ResultBadge";
 import { YIELD_RANGES } from "../components/Charts";
@@ -127,6 +127,27 @@ export default function Dashboard() {
     [stats, resultLabelMap]
   );
 
+  const inputImpactData = useMemo(() => {
+    const history = filteredHistory || [];
+    if (!history.length) return [];
+
+    const highRate = (rows) => {
+      if (!rows.length) return 0;
+      const highCount = rows.filter((row) => row.result === "High").length;
+      return (highCount / rows.length) * 100;
+    };
+
+    const fertilizerRows = history.filter((row) => Boolean(row.fertilizer_used));
+    const optimalRainRows = history.filter((row) => Number(row.rainfall) >= 50 && Number(row.rainfall) <= 100);
+    const irrigationRows = history.filter((row) => Boolean(row.irrigation));
+
+    return [
+      { name: t("inputFertilizer"), impact: highRate(fertilizerRows), sampleCount: fertilizerRows.length },
+      { name: t("inputRainfall"), impact: highRate(optimalRainRows), sampleCount: optimalRainRows.length },
+      { name: t("inputIrrigation"), impact: highRate(irrigationRows), sampleCount: irrigationRows.length },
+    ];
+  }, [filteredHistory, t]);
+
   if (loading) {
     return <LoadingSpinner label={t("loadingAnalytics")} />;
   }
@@ -142,10 +163,15 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="app-card rounded-xl p-4 sm:p-5">
-          <p className="text-xs font-semibold uppercase text-gray-600 dark:text-gray-400">{t("totalPredictions")}</p>
-          <p className="mt-2 text-3xl font-bold text-green-700 dark:text-green-300">{stats.summary.total_predictions || 0}</p>
-        </div>
+        <InputImpactBarChart
+          data={inputImpactData}
+          title={t("inputImpactTitle")}
+          xLabel={t("inputAxis")}
+          yLabel={t("impactAxis")}
+          countLabel={t("sampleAxis")}
+          impactLegendLabel={t("impactLegend")}
+          countLegendLabel={t("sampleLegend")}
+        />
         <PieResultChart data={pieData} title={t("resultDistribution")} />
       </div>
 
