@@ -1,4 +1,4 @@
-import { BarChart3, LogOut, Settings, Sprout } from "lucide-react";
+import { BarChart3, History, LogOut, Settings, Sprout } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
@@ -8,6 +8,7 @@ import logoImage from "../assets/hero.png";
 const navItems = [
   { to: "/dashboard", labelKey: "navDashboard", icon: BarChart3 },
   { to: "/predict", labelKey: "navPredict", icon: Sprout },
+  { to: "/history", labelKey: "navHistory", icon: History },
   { to: "/settings", labelKey: "navSettings", icon: Settings },
 ];
 

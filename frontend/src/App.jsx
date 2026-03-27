@@ -7,6 +7,7 @@ import { useAuth } from "./context/AuthContext";
 import { useUI } from "./context/UIContext";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
+import History from "./pages/History";
 import Login from "./pages/Login";
 import Predict from "./pages/Predict";
 import Register from "./pages/Register";
@@ -95,6 +96,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <History />
               </ProtectedRoute>
             }
           />
