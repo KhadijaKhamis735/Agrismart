@@ -13,8 +13,10 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const onLogout = () => {
+    const confirmed = window.confirm(t("logoutConfirm"));
+    if (!confirmed) return;
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   return (
