@@ -14,26 +14,26 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUI } from "../context/UIContext";
+import maizeSlide1 from "../assets/maize-slides/maize-slide-1.jpg";
+import maizeSlide2 from "../assets/maize-slides/maize-slide-2.jpg";
+import maizeSlide3 from "../assets/maize-slides/maize-slide-3.jpg";
+import maizeSlide4 from "../assets/maize-slides/maize-slide-4.jpg";
 
 const heroSlides = [
   {
-    image:
-      "https://images.unsplash.com/photo-1592982537447-6f2a6a0f4f1d?auto=format&fit=crop&w=1800&q=80",
+    image: maizeSlide1,
     titleKey: "homeSlide1Title",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?auto=format&fit=crop&w=1800&q=80",
+    image: maizeSlide2,
     titleKey: "homeSlide2Title",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?auto=format&fit=crop&w=1800&q=80",
+    image: maizeSlide3,
     titleKey: "homeSlide3Title",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1800&q=80",
+    image: maizeSlide4,
     titleKey: "homeSlide4Title",
   },
 ];
